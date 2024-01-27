@@ -1,0 +1,10 @@
+.slider{
+display:flex; 
+
+gap:100px;
+
+}
+
+.slider__current img{
+  width:200px;  
+}
