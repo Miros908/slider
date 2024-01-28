@@ -19,19 +19,26 @@ let currentNumber=0;
 
 
 
-buttonBack.addEventListener('click',()=>{
-if(currentNumber>0){currentNumber--}
 
-if(listItems[currentNumber]!=undefined){
-currentElement.innerHTML=listItems[currentNumber].innerHTML;
 
-console.log(currentNumber)
+
+
+sliderBlock.addEventListener('click',(event)=>{
+
+if(event.target.className==="slider__back"){
+    if(currentNumber>0){currentNumber--}
+
+    if(listItems[currentNumber]!=undefined){
+    currentElement.innerHTML=listItems[currentNumber].innerHTML;
+    
+
+    
+    }
 
 }
 
-})
 
-buttonNext.addEventListener('click',()=>{
+if(event.target.className==="slider__next"){
     if(currentNumber<listItems.length-1){
         currentNumber++
     }
@@ -43,13 +50,8 @@ buttonNext.addEventListener('click',()=>{
  
     }
 
-
-
-    console.log(currentNumber)
-    
-    })
-
-
+}
+})
 
 
 
