@@ -33,10 +33,14 @@ function slider2(selector, setting) {
 
     sliderBlock.addEventListener('click', (event) => {
 
-        const target = event.target.closest('button').classList[0]
+        const target = event.target.closest('button').classList
 
 
-        if (target === "slider__back") {
+
+       
+
+
+        if (target.contains('slider__back')) {
             if (currentNumber > 0) {
                 currentNumber--
             }
@@ -52,7 +56,7 @@ function slider2(selector, setting) {
         }
 
 
-        if (target === "slider__back") {
+        if (target.contains('slider__next')) {
 
             if (currentNumber < listItems.length - 1) {
                 currentNumber++
