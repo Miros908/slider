@@ -1,12 +1,20 @@
-.slider{
-display:flex; 
-
-gap:100px;
-
+.list__item img{
+width:200px;
 height:200px;
+}
+.list__item{
+ list-style-type: none; 
 
 }
 
-.slider__current img{
-  width:200px;  
+.paginationItem{
+  display:none;  
+}
+
+.activePaginationItem{
+   display:block; 
+}
+
+.active{
+ border:5px solid red !important
 }

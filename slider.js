@@ -1,114 +1,221 @@
-function slider2(selector, setting) {
+function createElement(tagName,className,content=null,attribute=null,attributeValue=null){
 
-    if (!document.querySelector(selector)) {
-        throw new Error('Неверный селектор')
-    }
-    let list = document.querySelector(selector)
+ const element=document.createElement(tagName)
+ element.className=className
+ if(content){
+   element.innerHTML=content 
+ }
 
-    if (list.children.length === 0) {
-        throw new Error('Отстутствуют элементы в блоке')
-    }
-    let listItems = [...list.children]
+ if(attribute&&attributeValue){
+   element.setAttribute(attribute,attributeValue) 
+ 
+ }
 
+ return element
+    
+}
 
-    const buttonBack = ` <button class='slider__back'>${setting.back}</button>`;
-    const buttonNext = `<button class='slider__next'>${setting.next}</button>`;
-
-    const currentSlide = "<div class='slider__current'></div>"
-
-    const slider = `<div class="slider">${buttonBack}${currentSlide}${buttonNext}</div>`
-
-    list.outerHTML = slider
-
-
-    const sliderBlock = document.querySelector('.slider')
-
-
-    const currentElement = sliderBlock.querySelector('.slider__current')
-
-    currentElement.append(listItems[0])
-
-
-    let currentNumber = 0;
-
-    sliderBlock.addEventListener('click', (event) => {
-
-        const target = event.target.closest('button').classList
+function updateActiveIndicators(allIndicators,currentIndex,startIndex){
 
 
 
-       
+allIndicators.forEach((elem)=>{
+   elem.classList.remove('activePaginationItem') 
+   elem.classList.remove('active') 
+})
+
+for(let i=startIndex;i<=currentIndex;i++){
+
+  allIndicators[i].classList.add('activePaginationItem')  
+}
 
 
-        if (target.contains('slider__back')) {
-            if (currentNumber > 0) {
-                currentNumber--
-            }
 
-
-            if (listItems[currentNumber] != undefined) {
-                currentElement.innerHTML = listItems[currentNumber].innerHTML
-                setting.onPrev()
-
-
-            }
-
-        }
-
-
-        if (target.contains('slider__next')) {
-
-            if (currentNumber < listItems.length - 1) {
-                currentNumber++
-
-
-            }
-
-
-            if (listItems[currentNumber] != undefined) {
-
-                setting.onNext()
-
-                currentElement.innerHTML = listItems[currentNumber].innerHTML
-
-
-            }
-
-        }
-    })
 
 
 }
 
 
-const setting = {
 
-    back: ` <svg height="128px" id="Layer_1" style="enable-background:new 0 0 128 128;" version="1.1" viewBox="0 0 128 128" width="128px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g>
-        <line style="fill:none;stroke:#2F3435;stroke-width:12;stroke-linecap:square;stroke-miterlimit:10;" x1="87.5" x2="40.5" y1="111" y2="64"/>
-        <line style="fill:none;stroke:#2F3435;stroke-width:12;stroke-linecap:square;stroke-miterlimit:10;" x1="40.5" x2="87.5" y1="64" y2="17"/>
-    </g>
-</svg>`,
 
-    next: `<svg height="128px" id="Layer_1" style="enable-background:new 0 0 128 128;" version="1.1" viewBox="0 0 128 128" width="128px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><line style="fill:none;stroke:#2F3435;stroke-width:12;stroke-linecap:square;stroke-miterlimit:10;" x1="40.5" x2="87.5" y1="17" y2="64"/><line style="fill:none;stroke:#2F3435;stroke-width:12;stroke-linecap:square;stroke-miterlimit:10;" x1="87.5" x2="40.5" y1="64" y2="111"/></g></svg>`,
 
-    onPrev: function onPrev() {
-        console.log('hello')
-    },
-    onNext: function onNext() {
-        console.log('hi')
+
+
+
+
+function createSlider(selector,options={}){
+    
+
+
+    const optionsDef={
+        btnBack: '<',
+        btnNext: '>',
+        onPrev: () => {},
+        onNext: () => {},
+        widthSlide:'200px',
+        heightSlide:'200px'
+
     }
+
+    options=Object.assign({},optionsDef,options)
+
+
+    const sliderList=document.querySelector(`${selector}`)
+    if(!sliderList){throw new Error('Селектор не найден')}
+    sliderList.style.display='flex'
+    sliderList.style.padding='0'
+    sliderList.style.position='absolute'
+    sliderList.style.transition='left 1s'
+    sliderList.style.left='0'    
+
+    const lengthList=sliderList.children.length-1
+
+
+const buttonPrev=createElement('button','buttonPrev',options.btnBack,'type','button')
+const buttonNext=createElement('button','buttonNext',options.btnNext,'type','button')
+const sliderBlock=createElement('div','sliderBlock')
+
+const paginationSlider=createElement('div','pagination')
+paginationSlider.style.position='absolute'
+paginationSlider.style.display='flex'
+paginationSlider.style.gap='10px'
+paginationSlider.style.left='53px'
+paginationSlider.style.top='223px'
+
+
+
+for(let i=0;i<=lengthList;i++){
+  const paginationItem=createElement('div','paginationItem')
+
+  paginationItem.style.width='20px';
+  paginationItem.style.height='20px';
+  paginationItem.style.border='2px solid black';
+  paginationItem.style.borderRadius='50%';
+  paginationItem.innerHTML=i+1;
+  paginationItem.style.textAlign='center'
+  paginationSlider.appendChild(paginationItem)  
+
+  if(i<5){paginationItem.classList.add('activePaginationItem')}
+
+}
+
+const indicators=[...paginationSlider.children]
+let sliderCounter=0;
+let sliderCoordinate=0;
+let startIndex = 0;
+
+indicators[sliderCounter].classList.add('active')
+
+
+
+
+
+
+
+sliderBlock.style.width=options.widthSlide
+sliderBlock.style.height=options.heightSlide
+sliderBlock.style.overflow='hidden'
+sliderBlock.style.position='relative'
+
+
+const sliderWrapper=createElement('div','sliderWrapper')
+
+sliderWrapper.style.display='flex'
+sliderWrapper.style.position='relative'
+sliderWrapper.appendChild(buttonPrev)
+sliderWrapper.appendChild(sliderBlock)
+sliderWrapper.appendChild(buttonNext)
+
+
+sliderList.insertAdjacentElement("afterend",sliderWrapper)
+
+sliderBlock.appendChild(sliderList)
+
+sliderWrapper.insertAdjacentElement("afterend",paginationSlider)
+
+
+
+
+
+const parseWidth=parseInt(options.widthSlide,10)
+sliderWrapper.addEventListener('click',(event)=>{
+
+
+
+
+
+  
+
+
+
+ const eventTargetClass=event.target.closest('button').classList
+ 
+
+if(eventTargetClass.contains('buttonNext')){
+
+    
+
+   
+
+sliderCoordinate-=parseWidth;
+sliderCounter++
+startIndex = Math.max(sliderCounter - 4, 0);
+
+if(sliderCounter>lengthList){
+sliderCounter=0
+sliderCoordinate=0
+}
+
+sliderList.style.left=`${sliderCoordinate}px`
+
+}
+
+if(eventTargetClass.contains('buttonPrev')){
+
+  
+
+if(sliderCounter!==0){
+sliderCounter--
+startIndex = Math.max(sliderCounter - 4, 0);
+sliderCoordinate+=parseWidth
+
+
+}else{
+sliderCounter=lengthList
+sliderCoordinate=-parseWidth*lengthList
+startIndex = Math.max(sliderCounter - 4, 0);}    
+
+
+sliderList.style.left=`${sliderCoordinate}px`
+
+}
+
+if(sliderCounter<5){updateActiveIndicators(indicators,4,0)}else{updateActiveIndicators(indicators,sliderCounter,startIndex)}
+
+indicators[sliderCounter].classList.add('active')
+
+
+
+
+
+
+   
+
+
+
+})
+
+
+
+
+
 }
 
 
-slider2('.list', setting)
-    
-    
-     
-        
-    
-    
-    
-    
-    
-    
+
+
+createSlider('.list')
+
+
+
+
