@@ -1,4 +1,13 @@
 function createSlider(selector, options = {}) {
+  function applyAnimationAndRemoveClass(element, animationClassName) {
+    element.classList.add(animationClassName);
+
+    element.addEventListener("animationend", function handler() {
+      element.classList.remove(animationClassName);
+
+      element.removeEventListener("animationend", handler);
+    });
+  }
   function createElement(
     tagName,
     className,
@@ -35,8 +44,8 @@ function createSlider(selector, options = {}) {
     btnNext: ">",
     onPrev: () => {},
     onNext: () => {},
-    widthSlide: "500px",
-    heightSlide: "500px",
+    widthSlide: "200px",
+    heightSlide: "200px",
     visiblePaginationRange: "5",
   };
 
@@ -61,6 +70,7 @@ function createSlider(selector, options = {}) {
   const sliderListItem = [...sliderList.children];
 
   sliderListItem.forEach((elem) => {
+    elem.style.transition = "transform 1s";
     [...elem.children].forEach((item) => {
       item.style.width = options.widthSlide;
       item.style.height = options.heightSlide;
@@ -185,7 +195,11 @@ function createSlider(selector, options = {}) {
       } else {
         updateActiveIndicators(indicators, sliderCounter, startIndex);
       }
-
+      console.log(sliderCounter);
+      applyAnimationAndRemoveClass(
+        sliderListItem[sliderCounter],
+        "rotate-element"
+      );
       indicators[sliderCounter].classList.add("active");
     }
   });
