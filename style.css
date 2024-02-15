@@ -1,20 +1,15 @@
-.list__item img{
-width:200px;
-height:200px;
-}
-.list__item{
- list-style-type: none; 
-
+.list__item {
+  list-style-type: none;
 }
 
-.paginationItem{
-  display:none;  
+.paginationItem {
+  display: none;
 }
 
-.activePaginationItem{
-   display:block; 
+.activePaginationItem {
+  display: block;
 }
 
-.active{
- border:5px solid red !important
+.active {
+  border: 5px solid red !important;
 }
