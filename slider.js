@@ -1,14 +1,5 @@
-function createSlider(selector, options = {}) {
-  function applyAnimationAndRemoveClass(element, animationClassName) {
-    element.classList.add(animationClassName);
-
-    element.addEventListener("animationend", function handler() {
-      element.classList.remove(animationClassName);
-
-      element.removeEventListener("animationend", handler);
-    });
-  }
-  function createElement(
+class FunctionSlider {
+  createElement(
     tagName,
     className,
     content = null,
@@ -28,7 +19,17 @@ function createSlider(selector, options = {}) {
     return element;
   }
 
-  function updateActiveIndicators(allIndicators, currentIndex, startIndex) {
+  applyAnimationAndRemoveClass(element, animationClassName) {
+    element.classList.add(animationClassName);
+
+    element.addEventListener("animationend", function handler() {
+      element.classList.remove(animationClassName);
+
+      element.removeEventListener("animationend", handler);
+    });
+  }
+
+  updateActiveIndicators(allIndicators, currentIndex, startIndex) {
     allIndicators.forEach((elem) => {
       elem.classList.remove("activePaginationItem");
       elem.classList.remove("active");
@@ -38,7 +39,11 @@ function createSlider(selector, options = {}) {
       allIndicators[i].classList.add("activePaginationItem");
     }
   }
+}
 
+const functions = new FunctionSlider();
+
+function createSlider(selector, options = {}) {
   const optionsDef = {
     btnBack: "<",
     btnNext: ">",
@@ -59,32 +64,28 @@ function createSlider(selector, options = {}) {
   if (!sliderList) {
     throw new Error("Селектор не найден");
   }
-  sliderList.style.display = "flex";
-  sliderList.style.padding = "0";
-  sliderList.style.position = "absolute";
-  sliderList.style.transition = "left 1s";
-  sliderList.style.left = "0";
+
+  sliderList.classList.add("sliderlist");
 
   const lengthList = sliderList.children.length - 1;
 
   const sliderListItem = [...sliderList.children];
 
   sliderListItem.forEach((elem) => {
-    elem.style.transition = "transform 1s";
     [...elem.children].forEach((item) => {
       item.style.width = options.widthSlide;
       item.style.height = options.heightSlide;
     });
   });
 
-  const buttonPrev = createElement(
+  const buttonPrev = functions.createElement(
     "button",
     "buttonPrev",
     options.btnBack,
     "type",
     "button"
   );
-  const buttonNext = createElement(
+  const buttonNext = functions.createElement(
     "button",
     "buttonNext",
     options.btnNext,
@@ -92,24 +93,16 @@ function createSlider(selector, options = {}) {
     "button"
   );
 
-  const sliderBlock = createElement("div", "sliderBlock");
-  const blockWrapper = createElement("div", "blockWrapper");
+  const sliderBlock = functions.createElement("div", "sliderBlock");
+  const blockWrapper = functions.createElement("div", "blockWrapper");
 
-  const paginationSlider = createElement("div", "pagination");
-  paginationSlider.style.display = "flex";
-  paginationSlider.style.gap = "10px";
-  paginationSlider.style.left = "53px";
-  paginationSlider.style.top = "223px";
+  const paginationSlider = functions.createElement("div", "paginationSlider");
 
   for (let i = 0; i <= lengthList; i++) {
-    const paginationItem = createElement("div", "paginationItem");
+    const paginationItem = functions.createElement("div", "paginationItem");
 
-    paginationItem.style.width = "20px";
-    paginationItem.style.height = "20px";
-    paginationItem.style.border = "2px solid black";
-    paginationItem.style.borderRadius = "50%";
     paginationItem.innerHTML = i + 1;
-    paginationItem.style.textAlign = "center";
+
     paginationSlider.appendChild(paginationItem);
 
     if (i < options.visiblePaginationRange) {
@@ -121,20 +114,11 @@ function createSlider(selector, options = {}) {
 
   indicators[sliderCounter].classList.add("active");
 
-  sliderBlock.style.width = options.widthSlide;
-  sliderBlock.style.height = options.heightSlide;
-  sliderBlock.style.overflow = "hidden";
-  sliderBlock.style.position = "relative";
+  sliderBlock.style.width = options.widthSlide; //???
+  sliderBlock.style.height = options.heightSlide; //???
 
-  const sliderWrapper = createElement("div", "sliderWrapper");
+  const sliderWrapper = functions.createElement("div", "sliderWrapper");
 
-  sliderWrapper.style.display = "flex";
-  sliderWrapper.style.flexDirection = "column";
-  sliderWrapper.style.alignItems = "center";
-  sliderWrapper.style.gap = "20px";
-
-  blockWrapper.style.display = "flex";
-  blockWrapper.style.position = "relative";
   blockWrapper.appendChild(buttonPrev);
   blockWrapper.appendChild(sliderBlock);
   blockWrapper.appendChild(buttonNext);
@@ -148,8 +132,9 @@ function createSlider(selector, options = {}) {
 
   const parseWidth = parseInt(options.widthSlide, 10);
   sliderWrapper.addEventListener("click", (event) => {
-    if (event.target.closest("button")) {
-      const eventTargetClass = event.target.closest("button").classList;
+    const closestButton = event.target.closest("button");
+    if (closestButton) {
+      const eventTargetClass = closestButton.classList;
 
       if (eventTargetClass.contains("buttonNext")) {
         sliderCoordinate -= parseWidth;
@@ -164,7 +149,7 @@ function createSlider(selector, options = {}) {
           sliderCoordinate = 0;
         }
 
-        sliderList.style.left = `${sliderCoordinate}px`;
+        sliderList.style.transform = `translateX(${sliderCoordinate}px)`;
       }
 
       if (eventTargetClass.contains("buttonPrev")) {
@@ -184,19 +169,19 @@ function createSlider(selector, options = {}) {
           );
         }
 
-        sliderList.style.left = `${sliderCoordinate}px`;
+        sliderList.style.transform = `translateX(${sliderCoordinate}px)`;
       }
       if (sliderCounter <= options.visiblePaginationRange - 1) {
-        updateActiveIndicators(
+        functions.updateActiveIndicators(
           indicators,
           options.visiblePaginationRange - 1,
           0
         );
       } else {
-        updateActiveIndicators(indicators, sliderCounter, startIndex);
+        functions.updateActiveIndicators(indicators, sliderCounter, startIndex);
       }
-      console.log(sliderCounter);
-      applyAnimationAndRemoveClass(
+
+      functions.applyAnimationAndRemoveClass(
         sliderListItem[sliderCounter],
         "rotate-element"
       );
