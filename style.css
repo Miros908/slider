@@ -35,7 +35,6 @@
   overflow: hidden;
   position: relative;
 }
-
 .sliderWrapper {
   display: flex;
   flex-direction: column;
